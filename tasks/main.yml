@@ -3,6 +3,7 @@
   apt: pkg={{ item }} state=latest update_cache=true
   with_items:
     - git
+  when: mode == 'dev'
 
 - name: Add system group
   group: name="{{ system_user }}"
@@ -12,21 +13,26 @@
 
 - name: Ensure .ssh directory exists
   file: path="/home/{{ system_user }}/.ssh" state=directory mode=0700 owner="{{ system_user }}" group="{{ system_group }}"
+  when: mode == 'dev'
 
 - name: Copy aws deploy key
   action: copy src="../../keys/{{ magento_deploy_key }}" dest="/home/{{ system_user }}/.ssh/{{ prefix }}" owner="{{ system_user }}" group="{{ system_group }}" mode=0600
+  when: mode == 'dev'
 
 - name: Create installation folder (web_root)
   file: path="{{ web_root }}" owner="{{ system_user }}" group="{{ system_group }}" state=directory recurse=yes mode='u=rwX,g=rwX,o=rX'
 
 - name: Ensure .ssh/config exists
   file: path="/home/{{ system_user }}/.ssh/config" state=touch mode=0500 owner="{{ system_user }}" group="{{ system_group }}"
+  when: mode == 'dev'
 
 - name: User ssh config template
   template: src=home_ssh_config.j2 dest="/home/{{ system_user }}/.ssh/config" owner="{{ system_user }}" group="{{ system_group }}" mode=0500
+  when: mode == 'dev'
 
 - name: gitconfig template
   template: src=gitconfig.j2 dest="/home/{{ system_user }}/.gitconfig" owner="{{ system_user }}" group="{{ system_user }}"
+  when: mode == 'dev'
 
 - name: git checkout repository for site
   git: repo="github-{{ domain }}:{{ gitrepo }}"
@@ -37,6 +43,7 @@
        key_file="/home/{{ system_user }}/.ssh/{{ prefix }}"
   sudo: yes
   sudo_user: "{{ system_user }}"
+  when: mode == 'dev'
 
 - name: Copy local.xml
   template: src=local.xml.j2 dest="{{ web_root }}/app/etc/local.xml" owner="{{ system_user }}" group="{{ system_group }}"
@@ -47,6 +54,7 @@
 
 - name: Copy Git.php script. Required for git-status.php and git-commit.php
   copy: src="Git.php" dest="{{ web_root }}/Git.php" owner="{{ system_user }}" group="{{ system_group }}" 
+  when: mode == 'dev'
 
 - name: Generate git-status.php for server-side git status check 
   template: src=git-status.php.j2 dest="{{ web_root }}/git-status.php" owner="{{ system_user }}" group="{{ system_group }}"
