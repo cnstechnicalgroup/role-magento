@@ -53,6 +53,10 @@
             </default_setup>
         </resources>
         <session_save><![CDATA[db]]></session_save>
+        <reference name="cart_sidebar.extra_actions">
+            <block type="checkout/cart_shipping" name="mini.checkout.cart.shipping" as="shipping" template="checkout/cart/shipping.phtml"/>
+            <block type="checkout/cart_shipping" name="mini.checkout.cart.shipping" as="shipping" template="checkout/cart/sidebar.phtml"/>
+        </reference>
     </global>
     <admin>
         <routers>
