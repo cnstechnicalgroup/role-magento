@@ -35,7 +35,7 @@
   when: mode == 'dev'
 
 - name: git checkout repository for site
-  git: repo="github-{{ domain }}:{{ gitrepo }}"
+  git: repo="git-{{ domain }}:{{ gitrepo }}"
        dest="{{ web_root }}"
        ssh_opts="-o StrictHostKeyChecking=no -vvvv"
        accept_hostkey=True
